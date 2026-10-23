@@ -29,24 +29,41 @@ export function Contact() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
     setFormState("submitting");
 
-    // Simulate form submission
-    // In production, replace this with your form endpoint (e.g., Formspree, Netlify Forms, API route)
-    setTimeout(() => {
-      // Simulate a successful submission (change to "error" to test error state)
-      const success = true;
-      if (success) {
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: siteConfig.contact.web3formsKey,
+          name: formData.name,
+          email: formData.email,
+          company: formData.company || "Not specified",
+          budget: formData.budget || "Not specified",
+          message: formData.message,
+          from_name: "Yuvora Agency Portfolio",
+          subject: `New Inquiry from ${formData.name}`,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
         setFormState("success");
         setFormData({ name: "", email: "", company: "", budget: "", message: "" });
       } else {
         setFormState("error");
       }
-    }, 1500);
+    } catch {
+      setFormState("error");
+    }
   };
 
   const inputStyle = (fieldName: string) => ({
@@ -277,6 +294,7 @@ export function Contact() {
                         </label>
                         <input
                           id="name"
+                          name="name"
                           type="text"
                           value={formData.name}
                           onChange={(e) =>
@@ -313,6 +331,7 @@ export function Contact() {
                         </label>
                         <input
                           id="email"
+                          name="email"
                           type="email"
                           value={formData.email}
                           onChange={(e) =>
@@ -360,6 +379,7 @@ export function Contact() {
                         </label>
                         <input
                           id="company"
+                          name="company"
                           type="text"
                           value={formData.company}
                           onChange={(e) =>
@@ -384,6 +404,7 @@ export function Contact() {
                         <div style={{ position: "relative" }}>
                           <select
                             id="budget"
+                            name="budget"
                             value={formData.budget}
                             onChange={(e) =>
                               setFormData({ ...formData, budget: e.target.value })
@@ -429,6 +450,7 @@ export function Contact() {
                       </label>
                       <textarea
                         id="message"
+                        name="message"
                         value={formData.message}
                         onChange={(e) =>
                           setFormData({ ...formData, message: e.target.value })

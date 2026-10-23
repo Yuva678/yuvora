@@ -16,6 +16,7 @@ export const siteConfig = {
     phone: "+91 7483341946",
     address: "Remote-first · Worldwide",
     calendlyUrl: "#contact",
+    web3formsKey: "9c4a7c7a-606a-4619-b47c-d49a2224c50f",
   },
 
   social: {
